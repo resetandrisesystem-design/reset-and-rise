@@ -1,0 +1,63 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  theme: {
+    extend: {
+      colors: {
+        navy: {
+          50:  "#eef0f7",
+          100: "#c5cbe6",
+          200: "#9ca6d5",
+          300: "#7381c4",
+          400: "#4a5cb3",
+          500: "#1a2744",
+          600: "#152039",
+          700: "#10182d",
+          800: "#0b1122",
+          900: "#060a16",
+        },
+        gold: {
+          50:  "#fdf9ec",
+          100: "#f8edca",
+          200: "#f0d68a",
+          300: "#e8bf4a",
+          400: "#d4af54",
+          500: "#b8962e",
+          600: "#9c7d22",
+          700: "#806417",
+          800: "#644b0e",
+          900: "#483206",
+        },
+        ivory: {
+          50:  "#fdfcf8",
+          100: "#f9f6ee",
+          200: "#f3edd9",
+          300: "#ece3c4",
+          400: "#e5daae",
+          500: "#ded199",
+          600: "#c8b87a",
+          700: "#b29f5b",
+          800: "#9c863c",
+          900: "#866d1d",
+        },
+        blush: {
+          50:  "#fdf2f5",
+          100: "#f9d9e3",
+          200: "#f2b4c8",
+          300: "#eb8fad",
+          400: "#e46992",
+          500: "#d4436d",
+          600: "#b33358",
+          700: "#922343",
+          800: "#71132e",
+          900: "#500319",
+        },
+      },
+      fontFamily: {
+        serif: ["Cormorant Garamond", "Georgia", "serif"],
+        sans:  ["DM Sans", "system-ui", "sans-serif"],
+      },
+    },
+  },
+  plugins: [],
+}

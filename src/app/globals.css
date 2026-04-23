@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --gold: #d4af54;
+    --navy: #1a2744;
+    --ivory: #f9f6ee;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply font-sans bg-ivory-100 text-navy-500 antialiased;
+    min-height: 100dvh;
+  }
+
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-navy-500 text-gold-400 px-5 py-2.5 rounded-full text-sm font-medium
+           hover:bg-navy-600 transition-all duration-200 active:scale-95 cursor-pointer
+           border border-navy-500;
+  }
+
+  .btn-outline {
+    @apply bg-transparent text-navy-500 px-5 py-2.5 rounded-full text-sm font-medium
+           hover:bg-navy-50 transition-all duration-200 active:scale-95 cursor-pointer
+           border border-navy-300;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-navy-400 px-4 py-2 rounded-full text-sm
+           hover:bg-ivory-200 transition-all duration-150 cursor-pointer border-0;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-ivory-300 p-5 shadow-sm;
+  }
+
+  .card-gold {
+    @apply border-l-4 border-l-gold-400 rounded-r-2xl rounded-l-none pl-5;
+  }
+
+  .input {
+    @apply w-full border border-ivory-300 rounded-xl px-4 py-2.5 text-sm
+           text-navy-500 bg-white placeholder-navy-300 outline-none
+           focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30
+           transition-all duration-150;
+  }
+
+  .textarea {
+    @apply w-full border border-ivory-300 rounded-xl px-4 py-3 text-sm
+           text-navy-500 bg-white placeholder-navy-300 outline-none
+           focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30
+           transition-all duration-150 resize-none leading-relaxed;
+  }
+
+  .label {
+    @apply text-xs uppercase tracking-widest text-navy-400 font-medium mb-1.5 block;
+  }
+
+  .section-title {
+    @apply font-serif text-2xl text-navy-500 font-medium mb-4;
+  }
+
+  .stat-card {
+    @apply bg-ivory-100 rounded-xl p-4 border border-ivory-200;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-navy-400
+           hover:bg-ivory-200 hover:text-navy-500 transition-all duration-150 cursor-pointer;
+  }
+
+  .nav-link.active {
+    @apply bg-navy-500 text-gold-400;
+  }
+
+  .progress-bar {
+    @apply h-1.5 bg-ivory-200 rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+    background: linear-gradient(90deg, #1a2744, #d4af54);
+  }
+
+  .mood-btn {
+    @apply rounded-xl border border-ivory-300 bg-ivory-50 p-3 cursor-pointer
+           text-center transition-all duration-200 hover:border-gold-400;
+  }
+
+  .mood-btn.selected {
+    @apply border-2 border-gold-400 bg-gold-50;
+  }
+
+  .tag {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .ai-card {
+    background: linear-gradient(135deg, #1a2744 0%, #0f1a33 100%);
+    @apply rounded-2xl p-5 relative overflow-hidden;
+  }
+}
