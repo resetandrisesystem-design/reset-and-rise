@@ -8,7 +8,7 @@ import type { Profile } from "@/types";
 import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut, Sparkles,
-  CalendarRange, CalendarCheck
+  CalendarRange, CalendarCheck, Settings
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -89,8 +89,20 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
         </p>
       </div>
 
-      {/* Sign out */}
-      <div className="px-3 pb-6">
+      {/* Settings + Sign out */}
+      <div className="px-3 pb-6 space-y-1">
+        <Link
+          href="/dashboard/settings"
+          className={clsx(
+            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all w-full",
+            pathname.startsWith("/dashboard/settings")
+              ? "bg-gold-400/15 text-gold-400 font-medium"
+              : "text-navy-300 hover:text-ivory-100 hover:bg-navy-400/30"
+          )}
+        >
+          <Settings size={16} />
+          Settings
+        </Link>
         <button
           onClick={signOut}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-navy-300 hover:text-ivory-100 hover:bg-navy-400/30 transition-all w-full"
