@@ -8,7 +8,7 @@ import type { Profile } from "@/types";
 import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut, Sparkles,
-  CalendarRange, CalendarCheck, Settings
+  CalendarRange, CalendarCheck, Settings, Calendar
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -17,6 +17,7 @@ const NAV = [
   { href: "/dashboard/planner",  label: "Daily Planner",   icon: CalendarDays    },
   { href: "/dashboard/weekly",   label: "Weekly Planner",  icon: CalendarRange   },
   { href: "/dashboard/monthly",  label: "Monthly Planner", icon: CalendarCheck   },
+  { href: "/dashboard/calendar", label: "Calendar",        icon: Calendar        },
   { href: "/dashboard/mental",   label: "Mind Reset",      icon: Brain           },
   { href: "/dashboard/finance",  label: "Money Reset",     icon: Wallet          },
   { href: "/dashboard/meals",    label: "Meal Planner",    icon: UtensilsCrossed },
