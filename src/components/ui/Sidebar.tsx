@@ -41,21 +41,20 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
     <aside className="fixed left-0 top-0 h-dvh w-64 bg-navy-500 flex flex-col z-40">
 
       {/* Logo */}
-      <div className="px-6 pt-6 pb-5 border-b border-navy-400/30 flex items-center gap-3">
+      <div className="px-6 pt-6 pb-5 border-b border-navy-400/30 flex flex-col items-center text-center">
         <img
-          src="/logo.png"
-          alt="Reset and Rise"
-          width={36}
-          height={36}
-          className="drop-shadow brightness-0 invert opacity-80 flex-shrink-0"
-        />
-        <div>
-          <h1 className="font-serif text-lg text-gold-400 font-medium leading-tight">
-            Reset &amp; Rise™
-          </h1>
-          <p className="text-ivory-400 text-[10px] uppercase tracking-widest">System</p>
-        </div>
-      </div>
+  src="/logo.png"
+  alt="Reset and Rise"
+  width={52}
+  height={52}
+  className="flex-shrink-0"
+/>
+        <div className="mt-2">
+  <h1 className="font-serif text-lg text-gold-400 font-medium leading-tight">
+    Reset &amp; Rise™
+  </h1>
+  <p className="text-ivory-400 text-[10px] uppercase tracking-widest">System</p>
+</div>
 
       {/* User greeting */}
       <div className="px-6 py-4 border-b border-navy-400/30">
