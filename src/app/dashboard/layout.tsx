@@ -3,26 +3,41 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Sidebar from "@/components/ui/Sidebar";
+import WelcomeAnimation from "@/components/welcome/WelcomeAnimation";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [user,        setUser]        = useState<any>(null);
+  const [profile,     setProfile]     = useState<any>(null);
+  const [loading,     setLoading]     = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-
+  const router   = useRouter();
   const isOverview = pathname === "/dashboard";
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        window.location.href = "/auth/login";
-      } else {
-        setUser(session.user);
-        setLoading(false);
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { window.location.href = "/auth/login"; return; }
+
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      setUser(session.user);
+      setProfile(prof);
+
+      // Show welcome animation only once per session
+      const key = `welcome_shown_${session.user.id}`;
+      if (!sessionStorage.getItem(key)) {
+        setShowWelcome(true);
+        sessionStorage.setItem(key, "1");
       }
+
+      setLoading(false);
     });
   }, []);
 
@@ -37,11 +52,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
+  const name = profile?.full_name || user?.email?.split("@")[0] || "Friend";
+
   return (
     <div className="flex min-h-dvh bg-ivory-100">
-      <Sidebar user={user} profile={null} />
+      {/* Welcome animation — shows once per session */}
+      {showWelcome && (
+        <WelcomeAnimation
+          name={name}
+          motivationText={profile?.motivation_text}
+          onDone={() => setShowWelcome(false)}
+        />
+      )}
+
+      <Sidebar user={user} profile={profile} />
+
       <main className="flex-1 ml-64 p-8 max-w-4xl">
-        {/* Back button — shown on all pages except Overview */}
+        {/* Back button */}
         {!isOverview && (
           <button
             onClick={() => router.push("/dashboard")}

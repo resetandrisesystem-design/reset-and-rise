@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -26,7 +27,7 @@ const NAV = [
 
 export default function Sidebar({ user, profile }: { user: User; profile: Profile | null }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const router   = useRouter();
   const supabase = createClient();
 
   async function signOut() {
@@ -39,12 +40,22 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
 
   return (
     <aside className="fixed left-0 top-0 h-dvh w-64 bg-navy-500 flex flex-col z-40">
-      {/* Brand */}
-      <div className="px-6 pt-8 pb-6 border-b border-navy-400/30">
-        <h1 className="font-serif text-2xl text-gold-400 font-medium leading-tight">
-          Reset &amp; Rise™
-        </h1>
-        <p className="text-ivory-400 text-xs mt-1 uppercase tracking-widest">Life Planner</p>
+
+      {/* Logo */}
+      <div className="px-6 pt-6 pb-5 border-b border-navy-400/30 flex items-center gap-3">
+        <Image
+          src="/logo.png"
+          alt="Reset and Rise"
+          width={36}
+          height={36}
+          className="drop-shadow brightness-0 invert opacity-80 flex-shrink-0"
+        />
+        <div>
+          <h1 className="font-serif text-lg text-gold-400 font-medium leading-tight">
+            Reset &amp; Rise™
+          </h1>
+          <p className="text-ivory-400 text-[10px] uppercase tracking-widest">System</p>
+        </div>
       </div>
 
       {/* User greeting */}
