@@ -39,53 +39,69 @@ export default function WelcomeAnimation({ name, motivationText, onDone }: Props
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-navy-500
-        transition-opacity duration-700 ${phase === "fadeout" ? "opacity-0" : "opacity-100"}`}
+      style={{
+        position: "fixed", inset: 0, zIndex: 50,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        backgroundColor: "#1a2744",
+        transition: "opacity 0.7s",
+        opacity: phase === "fadeout" ? 0 : 1,
+      }}
     >
-      {/* Background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-400/5 blur-3xl" />
-      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "32px", padding: "0 32px", textAlign: "center", maxWidth: "480px" }}>
 
-      <div className="relative flex flex-col items-center gap-8 px-8 text-center max-w-lg">
-
-        {/* Logo */}
-        <div className={`transition-all duration-700 ${
-          phase === "logo" ? "opacity-0 scale-90" : "opacity-100 scale-100"
-        }`}>
-          <img
-            src="/logo.png"
-            alt="Reset and Rise"
-            style={{ width: "120px", height: "120px", objectFit: "contain" }}
-          />
+        {/* Logo with white circle background */}
+        <div style={{
+          transition: "all 0.7s",
+          opacity:   phase === "logo" ? 0 : 1,
+          transform: phase === "logo" ? "scale(0.9)" : "scale(1)",
+        }}>
+          <div style={{
+            background: "white",
+            borderRadius: "50%",
+            padding: "12px",
+            width: "130px",
+            height: "130px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 30px rgba(212,175,84,0.4)",
+            margin: "0 auto",
+          }}>
+            <img
+              src="/logo.png"
+              alt="Reset and Rise"
+              style={{ width: "106px", height: "106px", objectFit: "contain" }}
+            />
+          </div>
         </div>
 
         {/* Greeting */}
-        <div className={`transition-all duration-700 ${
-          phase === "greeting" || phase === "message" || phase === "fadeout"
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4"
-        }`}>
-          <p className="text-ivory-300 text-sm uppercase tracking-[0.3em] mb-2">
+        <div style={{
+          transition: "all 0.7s",
+          opacity:   (phase === "greeting" || phase === "message" || phase === "fadeout") ? 1 : 0,
+          transform: (phase === "greeting" || phase === "message" || phase === "fadeout") ? "translateY(0)" : "translateY(16px)",
+        }}>
+          <p style={{ color: "#c8bfb0", fontSize: "12px", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "8px" }}>
             {timeGreeting}
           </p>
-          <h1 className="font-serif text-4xl text-gold-400 font-medium">
+          <h1 style={{ fontFamily: "var(--font-serif, Georgia, serif)", fontSize: "42px", color: "#d4af54", fontWeight: 500, margin: 0 }}>
             {firstName} ✦
           </h1>
         </div>
 
         {/* Message */}
-        <div className={`transition-all duration-700 ${
-          phase === "message" || phase === "fadeout"
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4"
-        }`}>
-          <div className="border-t border-b border-gold-400/30 py-5">
-            <p className="font-serif text-ivory-200 text-xl italic leading-relaxed">
+        <div style={{
+          transition: "all 0.7s",
+          opacity:   (phase === "message" || phase === "fadeout") ? 1 : 0,
+          transform: (phase === "message" || phase === "fadeout") ? "translateY(0)" : "translateY(16px)",
+        }}>
+          <div style={{ borderTop: "1px solid rgba(212,175,84,0.3)", borderBottom: "1px solid rgba(212,175,84,0.3)", padding: "20px 0" }}>
+            <p style={{ fontFamily: "var(--font-serif, Georgia, serif)", color: "#e8e0d5", fontSize: "20px", fontStyle: "italic", lineHeight: 1.6, margin: 0 }}>
               &ldquo;{message}&rdquo;
             </p>
           </div>
-          <p className="text-navy-300 text-xs mt-4 uppercase tracking-widest">
+          <p style={{ color: "#6b7a9a", fontSize: "11px", marginTop: "16px", letterSpacing: "0.2em", textTransform: "uppercase" }}>
             Reset &amp; Rise System
           </p>
         </div>
@@ -93,7 +109,7 @@ export default function WelcomeAnimation({ name, motivationText, onDone }: Props
         {/* Skip */}
         <button
           onClick={onDone}
-          className="text-navy-300 text-xs hover:text-ivory-300 transition-colors mt-2 underline underline-offset-2"
+          style={{ color: "#6b7a9a", fontSize: "12px", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", marginTop: "8px" }}
         >
           Skip
         </button>
