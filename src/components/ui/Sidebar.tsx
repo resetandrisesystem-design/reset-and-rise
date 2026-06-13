@@ -43,18 +43,19 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
       {/* Logo */}
       <div className="px-6 pt-6 pb-5 border-b border-navy-400/30 flex flex-col items-center text-center">
         <img
-  src="/logo.png"
-  alt="Reset and Rise"
-  width={52}
-  height={52}
-  className="flex-shrink-0"
-/>
+          src="/logo.png"
+          alt="Reset and Rise"
+          width={80}
+          height={80}
+          style={{ width: "80px", height: "80px", objectFit: "contain" }}
+        />
         <div className="mt-2">
-  <h1 className="font-serif text-lg text-gold-400 font-medium leading-tight">
-    Reset &amp; Rise™
-  </h1>
-  <p className="text-ivory-400 text-[10px] uppercase tracking-widest">System</p>
-</div>
+          <h1 className="font-serif text-lg text-gold-400 font-medium leading-tight">
+            Reset &amp; Rise™
+          </h1>
+          <p className="text-ivory-400 text-[10px] uppercase tracking-widest">System</p>
+        </div>
+      </div>
 
       {/* User greeting */}
       <div className="px-6 py-4 border-b border-navy-400/30">
