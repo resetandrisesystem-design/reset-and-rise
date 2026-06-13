@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+
 
 const DEFAULT_MESSAGES = [
   "Hey girl, one step closer to success!",
@@ -56,7 +56,7 @@ export default function WelcomeAnimation({ name, motivationText, onDone }: Props
         <div className={`transition-all duration-700 ${
           phase === "logo" ? "opacity-0 scale-90" : "opacity-100 scale-100"
         }`}>
-          <Image
+          <img
             src="/logo.png"
             alt="Reset and Rise"
             width={120}

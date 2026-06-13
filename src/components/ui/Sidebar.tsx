@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -43,7 +42,7 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
 
       {/* Logo */}
       <div className="px-6 pt-6 pb-5 border-b border-navy-400/30 flex items-center gap-3">
-        <Image
+        <img
           src="/logo.png"
           alt="Reset and Rise"
           width={36}
