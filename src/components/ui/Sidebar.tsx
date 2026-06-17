@@ -7,7 +7,7 @@ import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types";
 import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
-  BookHeart, LayoutDashboard, LogOut, Sparkles,
+  BookHeart, LayoutDashboard, LogOut,
   CalendarRange, CalendarCheck, Settings, Calendar, Home,
   Heart, Target, Activity, CalendarClock, Wind
 } from "lucide-react";
@@ -32,11 +32,31 @@ const PREMIUM_NAV = [
 ];
 
 const VIP_NAV = [
-  { href: "/dashboard/vip-daily",   label: "Activity Tracker",      icon: Activity     },
-  { href: "/dashboard/vip-weekly",  label: "Weekly Tracker",        icon: CalendarRange },
-  { href: "/dashboard/vip-monthly", label: "Monthly Progress",      icon: CalendarClock },
-  { href: "/dashboard/vip-reset",   label: "Weekly Reset",          icon: Wind          },
+  { href: "/dashboard/vip-daily",   label: "Activity Tracker", icon: Activity      },
+  { href: "/dashboard/vip-weekly",  label: "Weekly Tracker",   icon: CalendarRange },
+  { href: "/dashboard/vip-monthly", label: "Monthly Progress", icon: CalendarClock },
+  { href: "/dashboard/vip-reset",   label: "Weekly Reset",     icon: Wind          },
 ];
+
+function NavLink({ href, label, icon: Icon, pathname, exact = false }: {
+  href: string; label: string; icon: any; pathname: string; exact?: boolean;
+}) {
+  const active = exact ? pathname === href : pathname.startsWith(href);
+  return (
+    <Link
+      href={href}
+      className={clsx(
+        "flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] transition-all duration-150",
+        active
+          ? "bg-gold-400/15 text-gold-400 font-medium"
+          : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
+      )}
+    >
+      <Icon size={15} className="flex-shrink-0" />
+      <span className="truncate">{label}</span>
+    </Link>
+  );
+}
 
 export default function Sidebar({ user, profile }: { user: User; profile: Profile | null }) {
   const pathname = usePathname();
@@ -52,141 +72,71 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
   const name = profile?.full_name || user.email?.split("@")[0] || "Friend";
 
   return (
-    <aside className="fixed left-0 top-0 h-dvh w-64 bg-navy-500 flex flex-col z-40">
+    <aside className="fixed left-0 top-0 h-dvh w-64 bg-navy-500 flex flex-col z-40 overflow-hidden">
 
-      {/* Logo */}
-      <div className="px-6 pt-6 pb-5 border-b border-navy-400/30 flex flex-col items-center text-center">
-        <div style={{
-          background: "white",
-          borderRadius: "50%",
-          padding: "8px",
-          width: "90px",
-          height: "90px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 2px 12px rgba(212,175,84,0.3)"
-        }}>
-          <img
-            src="/logo.png"
-            alt="Reset and Rise"
-            style={{ width: "74px", height: "74px", objectFit: "contain" }}
-          />
-        </div>
-        <div className="mt-3">
-          <h1 className="font-serif text-lg text-gold-400 font-medium leading-tight">
-            Reset &amp; Rise™
-          </h1>
-          <p className="text-ivory-400 text-[10px] uppercase tracking-widest">System</p>
-        </div>
-      </div>
-
-      {/* User greeting */}
-      <div className="px-6 py-4 border-b border-navy-400/30">
+      {/* Logo + user — compact header, never shrinks */}
+      <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-navy-400/30">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400 font-serif text-lg font-medium select-none">
+          <div style={{
+            background: "white",
+            borderRadius: "50%",
+            padding: "4px",
+            width: "44px",
+            height: "44px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 2px 8px rgba(212,175,84,0.3)",
+            flexShrink: 0,
+          }}>
+            <img
+              src="/logo.png"
+              alt="Reset and Rise"
+              style={{ width: "36px", height: "36px", objectFit: "contain" }}
+            />
+          </div>
+          <div className="overflow-hidden">
+            <h1 className="font-serif text-sm text-gold-400 font-medium leading-tight truncate">
+              Reset &amp; Rise™
+            </h1>
+            <p className="text-ivory-400 text-[9px] uppercase tracking-widest">System</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 mt-3.5">
+          <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400 font-serif text-sm font-medium select-none flex-shrink-0">
             {name[0].toUpperCase()}
           </div>
-          <div>
-            <p className="text-ivory-100 text-sm font-medium leading-tight">{name}</p>
-            <p className="text-navy-300 text-xs">Welcome back ✦</p>
+          <div className="overflow-hidden">
+            <p className="text-ivory-100 text-xs font-medium leading-tight truncate">{name}</p>
+            <p className="text-navy-300 text-[10px]">Welcome back ✦</p>
           </div>
         </div>
       </div>
 
-      {/* Nav links */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {NAV.map(({ href, label, icon: Icon }) => {
-          const active = href === "/dashboard" ? pathname === href : pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={clsx(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150",
-                active
-                  ? "bg-gold-400/15 text-gold-400 font-medium"
-                  : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
-              )}
-            >
-              <Icon size={16} />
-              {label}
-            </Link>
-          );
-        })}
+      {/* Scrollable nav — takes all remaining space */}
+      <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-3 space-y-0.5">
+        {NAV.map((item) => <NavLink key={item.href} {...item} pathname={pathname} exact={item.href === "/dashboard"} />)}
 
-        {/* Premium section */}
-        <div className="pt-3 mt-3 border-t border-navy-400/30">
-          <p className="text-navy-400 text-[10px] uppercase tracking-widest px-3 mb-2">Premium</p>
-          {PREMIUM_NAV.map(({ href, label, icon: Icon }) => {
-            const active = pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150",
-                  active
-                    ? "bg-gold-400/15 text-gold-400 font-medium"
-                    : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
-                )}
-              >
-                <Icon size={16} />
-                {label}
-              </Link>
-            );
-          })}
+        <div className="pt-2.5 mt-2.5 border-t border-navy-400/30">
+          <p className="text-gold-400/70 text-[10px] font-semibold uppercase tracking-widest px-3 mb-1.5">Premium</p>
+          {PREMIUM_NAV.map((item) => <NavLink key={item.href} {...item} pathname={pathname} />)}
         </div>
 
-        {/* VIP section */}
-        <div className="pt-3 mt-3 border-t border-navy-400/30">
-          <p className="text-navy-400 text-[10px] uppercase tracking-widest px-3 mb-2">VIP</p>
-          {VIP_NAV.map(({ href, label, icon: Icon }) => {
-            const active = pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150",
-                  active
-                    ? "bg-gold-400/15 text-gold-400 font-medium"
-                    : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
-                )}
-              >
-                <Icon size={16} />
-                {label}
-              </Link>
-            );
-          })}
+        <div className="pt-2.5 mt-2.5 border-t border-navy-400/30">
+          <p className="text-gold-400/70 text-[10px] font-semibold uppercase tracking-widest px-3 mb-1.5">VIP</p>
+          {VIP_NAV.map((item) => <NavLink key={item.href} {...item} pathname={pathname} />)}
         </div>
       </nav>
-      <div className="px-5 py-4 mx-3 mb-3 rounded-xl bg-navy-400/20 border border-navy-400/30">
-        <Sparkles size={14} className="text-gold-400 mb-2" />
-        <p className="font-serif text-ivory-300 text-xs italic leading-relaxed">
-          &ldquo;Brew calm. Brew clarity. Brew control.&rdquo;
-        </p>
-      </div>
 
-      {/* Settings + Sign out */}
-      <div className="px-3 pb-6 space-y-1">
-        <Link
-          href="/dashboard/settings"
-          className={clsx(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all w-full",
-            pathname.startsWith("/dashboard/settings")
-              ? "bg-gold-400/15 text-gold-400 font-medium"
-              : "text-navy-300 hover:text-ivory-100 hover:bg-navy-400/30"
-          )}
-        >
-          <Settings size={16} />
-          Settings
-        </Link>
+      {/* Footer — never shrinks */}
+      <div className="flex-shrink-0 px-3 pt-2 pb-4 border-t border-navy-400/30 space-y-0.5">
+        <NavLink href="/dashboard/settings" label="Settings" icon={Settings} pathname={pathname} />
         <button
           onClick={signOut}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-navy-300 hover:text-ivory-100 hover:bg-navy-400/30 transition-all w-full"
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-navy-300 hover:text-ivory-100 hover:bg-navy-400/30 transition-all w-full"
         >
-          <LogOut size={16} />
+          <LogOut size={15} />
           Sign out
         </button>
       </div>
