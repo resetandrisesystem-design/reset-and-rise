@@ -9,7 +9,7 @@ import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut, Sparkles,
   CalendarRange, CalendarCheck, Settings, Calendar, Home,
-  Heart, Target, Activity
+  Heart, Target, Activity, CalendarClock, Wind
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -32,7 +32,10 @@ const PREMIUM_NAV = [
 ];
 
 const VIP_NAV = [
-  { href: "/dashboard/vip-daily", label: "Activity Tracker", icon: Activity },
+  { href: "/dashboard/vip-daily",   label: "Activity Tracker",      icon: Activity     },
+  { href: "/dashboard/vip-weekly",  label: "Weekly Tracker",        icon: CalendarRange },
+  { href: "/dashboard/vip-monthly", label: "Monthly Progress",      icon: CalendarClock },
+  { href: "/dashboard/vip-reset",   label: "Weekly Reset",          icon: Wind          },
 ];
 
 export default function Sidebar({ user, profile }: { user: User; profile: Profile | null }) {
