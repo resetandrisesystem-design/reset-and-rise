@@ -8,7 +8,8 @@ import type { Profile } from "@/types";
 import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut, Sparkles,
-  CalendarRange, CalendarCheck, Settings, Calendar, Home
+  CalendarRange, CalendarCheck, Settings, Calendar, Home,
+  Heart, Target
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -25,7 +26,9 @@ const NAV = [
 ];
 
 const PREMIUM_NAV = [
-  { href: "/dashboard/home-life", label: "Home & Life Reset", icon: Home },
+  { href: "/dashboard/home-life", label: "Home & Life Reset",     icon: Home   },
+  { href: "/dashboard/family",    label: "Family & Connection",   icon: Heart  },
+  { href: "/dashboard/goals",     label: "Goal Setting & Growth", icon: Target },
 ];
 
 export default function Sidebar({ user, profile }: { user: User; profile: Profile | null }) {
