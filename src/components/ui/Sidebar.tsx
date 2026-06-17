@@ -8,7 +8,7 @@ import type { Profile } from "@/types";
 import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut, Sparkles,
-  CalendarRange, CalendarCheck, Settings, Calendar
+  CalendarRange, CalendarCheck, Settings, Calendar, Home
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -22,6 +22,10 @@ const NAV = [
   { href: "/dashboard/finance",  label: "Money Reset",     icon: Wallet          },
   { href: "/dashboard/meals",    label: "Meal Planner",    icon: UtensilsCrossed },
   { href: "/dashboard/journal",  label: "AI Journal",      icon: BookHeart       },
+];
+
+const PREMIUM_NAV = [
+  { href: "/dashboard/home-life", label: "Home & Life Reset", icon: Home },
 ];
 
 export default function Sidebar({ user, profile }: { user: User; profile: Profile | null }) {
@@ -100,6 +104,29 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
             </Link>
           );
         })}
+
+        {/* Premium section */}
+        <div className="pt-3 mt-3 border-t border-navy-400/30">
+          <p className="text-navy-400 text-[10px] uppercase tracking-widest px-3 mb-2">Premium</p>
+          {PREMIUM_NAV.map(({ href, label, icon: Icon }) => {
+            const active = pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={clsx(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150",
+                  active
+                    ? "bg-gold-400/15 text-gold-400 font-medium"
+                    : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
+                )}
+              >
+                <Icon size={16} />
+                {label}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Affirmation */}
