@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import VipWeeklyClient from "@/components/vip-weekly/VipWeeklyClient";
+import PlanGate from "@/components/plan-gate/PlanGate";
 import { format, startOfWeek } from "date-fns";
 
 export default function VipWeeklyPage() {
@@ -22,6 +23,12 @@ export default function VipWeeklyPage() {
     });
   }, []);
 
-  if (!data) return <div className="text-navy-400 font-serif italic text-lg">Loading...</div>;
-  return <VipWeeklyClient {...data} />;
+  return (
+    <PlanGate requiredPlan="vip">
+      {!data
+        ? <div className="text-navy-400 font-serif italic text-lg">Loading...</div>
+        : <VipWeeklyClient {...data} />
+      }
+    </PlanGate>
+  );
 }

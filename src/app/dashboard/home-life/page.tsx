@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import HomeLifeClient from "@/components/homelife/HomeLifeClient";
+import PlanGate from "@/components/plan-gate/PlanGate";
 import { format, startOfWeek } from "date-fns";
 
 export default function HomeLifePage() {
@@ -22,6 +23,12 @@ export default function HomeLifePage() {
     });
   }, []);
 
-  if (!data) return <div className="text-navy-400 font-serif italic text-lg">Loading your home reset...</div>;
-  return <HomeLifeClient {...data} />;
+  return (
+    <PlanGate requiredPlan="premium">
+      {!data
+        ? <div className="text-navy-400 font-serif italic text-lg">Loading your home reset...</div>
+        : <HomeLifeClient {...data} />
+      }
+    </PlanGate>
+  );
 }

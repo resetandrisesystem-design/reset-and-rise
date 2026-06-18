@@ -3,6 +3,8 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   timezone: string;
+  motivation_text?: string | null;
+  plan?: "core" | "premium" | "vip";
   created_at: string;
   updated_at: string;
 }

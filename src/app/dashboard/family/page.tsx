@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import FamilyClient from "@/components/family/FamilyClient";
+import PlanGate from "@/components/plan-gate/PlanGate";
 import { format } from "date-fns";
 
 export default function FamilyPage() {
@@ -22,6 +23,12 @@ export default function FamilyPage() {
     });
   }, []);
 
-  if (!data) return <div className="text-navy-400 font-serif italic text-lg">Loading...</div>;
-  return <FamilyClient {...data} />;
+  return (
+    <PlanGate requiredPlan="premium">
+      {!data
+        ? <div className="text-navy-400 font-serif italic text-lg">Loading...</div>
+        : <FamilyClient {...data} />
+      }
+    </PlanGate>
+  );
 }

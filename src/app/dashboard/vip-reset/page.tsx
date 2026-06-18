@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import VipResetClient from "@/components/vip-reset/VipResetClient";
+import PlanGate from "@/components/plan-gate/PlanGate";
 import { format } from "date-fns";
 
 export default function VipResetPage() {
@@ -22,6 +23,12 @@ export default function VipResetPage() {
     });
   }, []);
 
-  if (!data) return <div className="text-navy-400 font-serif italic text-lg">Loading...</div>;
-  return <VipResetClient {...data} />;
+  return (
+    <PlanGate requiredPlan="vip">
+      {!data
+        ? <div className="text-navy-400 font-serif italic text-lg">Loading...</div>
+        : <VipResetClient {...data} />
+      }
+    </PlanGate>
+  );
 }

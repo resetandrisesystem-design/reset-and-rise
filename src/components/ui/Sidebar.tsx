@@ -5,11 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types";
+import { hasAccess, type Plan } from "@/types/plan";
 import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut,
   CalendarRange, CalendarCheck, Settings, Calendar, Home,
-  Heart, Target, Activity, CalendarClock, Wind
+  Heart, Target, Activity, CalendarClock, Wind, Lock
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -38,8 +39,8 @@ const VIP_NAV = [
   { href: "/dashboard/vip-reset",   label: "Weekly Reset",     icon: Wind          },
 ];
 
-function NavLink({ href, label, icon: Icon, pathname, exact = false }: {
-  href: string; label: string; icon: any; pathname: string; exact?: boolean;
+function NavLink({ href, label, icon: Icon, pathname, exact = false, locked = false }: {
+  href: string; label: string; icon: any; pathname: string; exact?: boolean; locked?: boolean;
 }) {
   const active = exact ? pathname === href : pathname.startsWith(href);
   return (
@@ -47,18 +48,21 @@ function NavLink({ href, label, icon: Icon, pathname, exact = false }: {
       href={href}
       className={clsx(
         "flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] transition-all duration-150",
-        active
-          ? "bg-gold-400/15 text-gold-400 font-medium"
-          : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
+        locked
+          ? "text-navy-400/60 hover:bg-navy-400/20 hover:text-navy-300"
+          : active
+            ? "bg-gold-400/15 text-gold-400 font-medium"
+            : "text-navy-200 hover:bg-navy-400/30 hover:text-ivory-100"
       )}
     >
       <Icon size={15} className="flex-shrink-0" />
-      <span className="truncate">{label}</span>
+      <span className="truncate flex-1">{label}</span>
+      {locked && <Lock size={11} className="flex-shrink-0 opacity-60" />}
     </Link>
   );
 }
 
-export default function Sidebar({ user, profile }: { user: User; profile: Profile | null }) {
+export default function Sidebar({ user, profile }: { user: User; profile: (Profile & { plan?: Plan }) | null }) {
   const pathname = usePathname();
   const router   = useRouter();
   const supabase = createClient();
@@ -70,6 +74,7 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
   }
 
   const name = profile?.full_name || user.email?.split("@")[0] || "Friend";
+  const userPlan: Plan = profile?.plan ?? "core";
 
   return (
     <aside className="fixed left-0 top-0 h-dvh w-64 bg-navy-500 flex flex-col z-40 overflow-hidden">
@@ -103,14 +108,19 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 mt-3.5">
-          <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400 font-serif text-sm font-medium select-none flex-shrink-0">
-            {name[0].toUpperCase()}
+        <div className="flex items-center justify-between mt-3.5">
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400 font-serif text-sm font-medium select-none flex-shrink-0">
+              {name[0].toUpperCase()}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-ivory-100 text-xs font-medium leading-tight truncate">{name}</p>
+              <p className="text-navy-300 text-[10px]">Welcome back ✦</p>
+            </div>
           </div>
-          <div className="overflow-hidden">
-            <p className="text-ivory-100 text-xs font-medium leading-tight truncate">{name}</p>
-            <p className="text-navy-300 text-[10px]">Welcome back ✦</p>
-          </div>
+          <span className="text-[9px] bg-gold-400/20 text-gold-400 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider flex-shrink-0">
+            {userPlan}
+          </span>
         </div>
       </div>
 
@@ -120,12 +130,16 @@ export default function Sidebar({ user, profile }: { user: User; profile: Profil
 
         <div className="pt-2.5 mt-2.5 border-t border-navy-400/30">
           <p className="text-gold-400/70 text-[10px] font-semibold uppercase tracking-widest px-3 mb-1.5">Premium</p>
-          {PREMIUM_NAV.map((item) => <NavLink key={item.href} {...item} pathname={pathname} />)}
+          {PREMIUM_NAV.map((item) => (
+            <NavLink key={item.href} {...item} pathname={pathname} locked={!hasAccess(userPlan, "premium")} />
+          ))}
         </div>
 
         <div className="pt-2.5 mt-2.5 border-t border-navy-400/30">
           <p className="text-gold-400/70 text-[10px] font-semibold uppercase tracking-widest px-3 mb-1.5">VIP</p>
-          {VIP_NAV.map((item) => <NavLink key={item.href} {...item} pathname={pathname} />)}
+          {VIP_NAV.map((item) => (
+            <NavLink key={item.href} {...item} pathname={pathname} locked={!hasAccess(userPlan, "vip")} />
+          ))}
         </div>
       </nav>
 

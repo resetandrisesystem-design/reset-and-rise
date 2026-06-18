@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import VipDailyClient from "@/components/vip-daily/VipDailyClient";
+import PlanGate from "@/components/plan-gate/PlanGate";
 import { format } from "date-fns";
 
 export default function VipDailyPage() {
@@ -22,6 +23,12 @@ export default function VipDailyPage() {
     });
   }, []);
 
-  if (!data) return <div className="text-navy-400 font-serif italic text-lg">Loading your activity tracker...</div>;
-  return <VipDailyClient {...data} />;
+  return (
+    <PlanGate requiredPlan="vip">
+      {!data
+        ? <div className="text-navy-400 font-serif italic text-lg">Loading your activity tracker...</div>
+        : <VipDailyClient {...data} />
+      }
+    </PlanGate>
+  );
 }
