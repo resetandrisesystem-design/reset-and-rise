@@ -21,6 +21,7 @@ export default function CalendarPage() {
         { data: planners },
         { data: moods },
         { data: finances },
+        { data: customEvents },
       ] = await Promise.all([
         supabase.from("journal_entries")
           .select("entry_date, journal_text, prompt_used")
@@ -40,6 +41,10 @@ export default function CalendarPage() {
         supabase.from("finance_entries")
           .select("month")
           .eq("user_id", uid),
+        supabase.from("calendar_events")
+          .select("*")
+          .eq("user_id", uid)
+          .order("event_date"),
       ]);
 
       // Build a unified map by date
@@ -89,10 +94,10 @@ export default function CalendarPage() {
         reflection:  e.reflection  ?? null,
       }));
 
-      setData({ userId: uid, entries });
+      setData({ userId: uid, entries, customEvents: customEvents ?? [] });
     });
   }, []);
 
   if (!data) return <div className="text-navy-400 font-serif italic text-lg">Loading your calendar...</div>;
-  return <CalendarClient userId={data.userId} entries={data.entries} />;
+  return <CalendarClient userId={data.userId} entries={data.entries} customEvents={data.customEvents} />;
 }

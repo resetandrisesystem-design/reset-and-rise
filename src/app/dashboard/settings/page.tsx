@@ -21,6 +21,7 @@ export default function SettingsPage() {
         initialEmail:    session.user.email ?? "",
         initialTimezone: profile?.timezone ?? "Europe/London",
         initialMotivation: profile?.motivation_text ?? "",
+        initialAvatarUrl: profile?.avatar_url ?? null,
       });
     });
   }, []);

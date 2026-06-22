@@ -110,8 +110,13 @@ export default function Sidebar({ user, profile }: { user: User; profile: (Profi
 
         <div className="flex items-center justify-between mt-3.5">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400 font-serif text-sm font-medium select-none flex-shrink-0">
-              {name[0].toUpperCase()}
+            <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center text-gold-400 font-serif text-sm font-medium select-none flex-shrink-0 overflow-hidden">
+              {profile?.avatar_url?.startsWith("emoji:")
+                ? <span className="text-sm">{profile.avatar_url.replace("emoji:", "")}</span>
+                : profile?.avatar_url
+                  ? <img src={profile.avatar_url} alt={name} className="w-full h-full object-cover" />
+                  : name[0].toUpperCase()
+              }
             </div>
             <div className="overflow-hidden">
               <p className="text-ivory-100 text-xs font-medium leading-tight truncate">{name}</p>

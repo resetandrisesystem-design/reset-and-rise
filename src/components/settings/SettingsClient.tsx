@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { User, Lock, Trash2, CheckCircle2, AlertCircle, Bell } from "lucide-react";
+import { User, Lock, Trash2, CheckCircle2, AlertCircle, Bell, Camera, X } from "lucide-react";
+
+const PRESET_AVATARS = [
+  "🌸", "🌿", "✨", "🦋", "🌙", "☀️", "🌊", "🪷", "🕊️", "🌺", "🍃", "⭐",
+];
 
 const TIMEZONES = [
   "Europe/London",
@@ -22,6 +26,7 @@ interface Props {
   initialEmail: string;
   initialTimezone: string;
   initialMotivation: string;
+  initialAvatarUrl: string | null;
 }
 
 export default function SettingsClient({
@@ -30,8 +35,14 @@ export default function SettingsClient({
   initialEmail,
   initialTimezone,
   initialMotivation,
+  initialAvatarUrl,
 }: Props) {
   const supabase = createClient();
+
+  // Avatar state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   // Profile state
   const [fullName, setFullName]           = useState(initialName);
@@ -73,6 +84,67 @@ export default function SettingsClient({
       setTimeout(() => setProfileSaved(false), 3000);
     }
     setProfileSaving(false);
+  }
+
+  // Upload photo from camera or device
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    setProfileError("");
+
+    const ext = file.name.split(".").pop();
+    const path = `${userId}/avatar-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      setProfileError("Failed to upload photo. Please try again.");
+      setUploadingAvatar(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+    const publicUrl = urlData.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: publicUrl })
+      .eq("id", userId);
+
+    if (!updateError) {
+      setAvatarUrl(publicUrl);
+      setShowAvatarPicker(false);
+    } else {
+      setProfileError("Photo uploaded but failed to save. Please try again.");
+    }
+    setUploadingAvatar(false);
+  }
+
+  // Select a preset emoji avatar
+  async function selectPresetAvatar(emoji: string) {
+    setUploadingAvatar(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: `emoji:${emoji}` })
+      .eq("id", userId);
+
+    if (!error) {
+      setAvatarUrl(`emoji:${emoji}`);
+      setShowAvatarPicker(false);
+    }
+    setUploadingAvatar(false);
+  }
+
+  async function removeAvatar() {
+    setUploadingAvatar(true);
+    await supabase.from("profiles").update({ avatar_url: null }).eq("id", userId);
+    setAvatarUrl(null);
+    setShowAvatarPicker(false);
+    setUploadingAvatar(false);
   }
 
   // Change password
@@ -130,6 +202,89 @@ export default function SettingsClient({
             <p className="text-navy-400 text-xs">Update your name and preferences</p>
           </div>
         </div>
+
+        {/* Avatar picker */}
+        <div className="flex items-center gap-4 mb-6 pb-5 border-b border-ivory-200">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full bg-gold-400/15 border-2 border-gold-300 flex items-center justify-center overflow-hidden text-3xl">
+              {avatarUrl?.startsWith("emoji:")
+                ? <span>{avatarUrl.replace("emoji:", "")}</span>
+                : avatarUrl
+                  ? <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                  : <span className="text-gold-400 font-serif text-2xl">{fullName?.[0]?.toUpperCase() || "?"}</span>
+              }
+            </div>
+            <button
+              onClick={() => setShowAvatarPicker(true)}
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-navy-500 border-2 border-white flex items-center justify-center hover:bg-navy-400 transition-colors"
+            >
+              <Camera size={12} className="text-gold-400" />
+            </button>
+          </div>
+          <div>
+            <p className="text-sm text-navy-500 font-medium">Profile picture</p>
+            <button
+              onClick={() => setShowAvatarPicker(true)}
+              className="text-xs text-gold-500 hover:text-gold-600 font-medium"
+            >
+              Change photo or avatar
+            </button>
+          </div>
+        </div>
+
+        {/* Avatar picker modal */}
+        {showAvatarPicker && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setShowAvatarPicker(false)}>
+            <div className="bg-white rounded-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-serif text-xl text-navy-500 font-medium">Profile Picture</h3>
+                <button onClick={() => setShowAvatarPicker(false)} className="text-navy-300 hover:text-navy-500">
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Camera / upload */}
+              <label className="btn-primary w-full flex items-center justify-center gap-2 mb-4 cursor-pointer">
+                <Camera size={14} />
+                {uploadingAvatar ? "Uploading…" : "Take photo or upload"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                  disabled={uploadingAvatar}
+                />
+              </label>
+
+              <p className="text-xs text-navy-400 text-center mb-3">— or choose an avatar —</p>
+
+              {/* Preset avatars */}
+              <div className="grid grid-cols-6 gap-2 mb-4">
+                {PRESET_AVATARS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    onClick={() => selectPresetAvatar(emoji)}
+                    disabled={uploadingAvatar}
+                    className="text-2xl bg-ivory-100 hover:bg-gold-50 border border-ivory-200 hover:border-gold-300 rounded-xl py-2.5 transition-all disabled:opacity-50"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+
+              {avatarUrl && (
+                <button
+                  onClick={removeAvatar}
+                  disabled={uploadingAvatar}
+                  className="text-xs text-red-400 hover:text-red-500 w-full text-center"
+                >
+                  Remove current picture
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4">
           {/* Full Name */}
