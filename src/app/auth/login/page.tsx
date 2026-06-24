@@ -85,6 +85,11 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <div className="flex justify-end mt-1">
+            <Link href="/auth/forgot-password" className="text-xs text-gold-500 hover:text-gold-600">
+              Forgot password?
+            </Link>
+          </div>
         </div>
         <button type="submit" className="btn-primary w-full justify-center" disabled={loading}>
           {loading ? "Signing in..." : "Sign in → Reset & Rise"}

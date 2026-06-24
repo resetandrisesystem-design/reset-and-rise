@@ -4,9 +4,22 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User, Lock, Trash2, CheckCircle2, AlertCircle, Bell, Camera, X } from "lucide-react";
 
-const PRESET_AVATARS = [
-  "🌸", "🌿", "✨", "🦋", "🌙", "☀️", "🌊", "🪷", "🕊️", "🌺", "🍃", "⭐",
-];
+const AVATAR_CATEGORIES = {
+  faces: {
+    label: "Faces",
+    emojis: ["👩", "👩🏻", "👩🏽", "👩🏾", "👩🏿", "👧", "👵", "👩‍🦱", "👩‍🦰", "👩‍🦳", "👩‍🦲", "🧕"],
+  },
+  animals: {
+    label: "Animals",
+    emojis: ["🦋", "🦢", "🦊", "🐰", "🐦", "🦄", "🐢", "🦚", "🐝", "🦩", "🐠", "🦌"],
+  },
+  nature: {
+    label: "Nature",
+    emojis: ["🌸", "🌿", "✨", "🌙", "☀️", "🌊", "🪷", "🕊️", "🌺", "🍃", "⭐", "🌷"],
+  },
+} as const;
+
+type AvatarCategory = keyof typeof AVATAR_CATEGORIES;
 
 const TIMEZONES = [
   "Europe/London",
@@ -43,6 +56,7 @@ export default function SettingsClient({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [activeAvatarTab, setActiveAvatarTab] = useState<AvatarCategory>("faces");
 
   // Profile state
   const [fullName, setFullName]           = useState(initialName);
@@ -259,9 +273,26 @@ export default function SettingsClient({
 
               <p className="text-xs text-navy-400 text-center mb-3">— or choose an avatar —</p>
 
-              {/* Preset avatars */}
+              {/* Category tabs */}
+              <div className="flex gap-1 bg-ivory-200 rounded-xl p-1 mb-3">
+                {(Object.keys(AVATAR_CATEGORIES) as AvatarCategory[]).map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveAvatarTab(cat)}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      activeAvatarTab === cat
+                        ? "bg-white text-navy-500 shadow-sm"
+                        : "text-navy-400 hover:text-navy-500"
+                    }`}
+                  >
+                    {AVATAR_CATEGORIES[cat].label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Preset avatars — active category */}
               <div className="grid grid-cols-6 gap-2 mb-4">
-                {PRESET_AVATARS.map((emoji) => (
+                {AVATAR_CATEGORIES[activeAvatarTab].emojis.map((emoji) => (
                   <button
                     key={emoji}
                     onClick={() => selectPresetAvatar(emoji)}
