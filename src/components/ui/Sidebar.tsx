@@ -151,6 +151,7 @@ export default function Sidebar({ user, profile }: { user: User; profile: (Profi
 
       {/* Footer — never shrinks */}
       <div className="flex-shrink-0 px-3 pt-2 pb-4 border-t border-navy-400/30 space-y-0.5">
+        {console.log("DEBUG admin check:", user.email, isAdminEmail(user.email))}
         {isAdminEmail(user.email) && (
           <NavLink href="/dashboard/admin" label="Admin Panel" icon={Shield} pathname={pathname} />
         )}
