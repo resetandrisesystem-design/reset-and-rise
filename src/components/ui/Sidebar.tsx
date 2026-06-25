@@ -10,8 +10,9 @@ import {
   CalendarDays, Brain, Wallet, UtensilsCrossed,
   BookHeart, LayoutDashboard, LogOut,
   CalendarRange, CalendarCheck, Settings, Calendar, Home,
-  Heart, Target, Activity, CalendarClock, Wind, Lock
+  Heart, Target, Activity, CalendarClock, Wind, Lock, Shield
 } from "lucide-react";
+import { isAdminEmail } from "@/lib/admin-emails";
 import clsx from "clsx";
 
 const NAV = [
@@ -150,6 +151,9 @@ export default function Sidebar({ user, profile }: { user: User; profile: (Profi
 
       {/* Footer — never shrinks */}
       <div className="flex-shrink-0 px-3 pt-2 pb-4 border-t border-navy-400/30 space-y-0.5">
+        {isAdminEmail(user.email) && (
+          <NavLink href="/dashboard/admin" label="Admin Panel" icon={Shield} pathname={pathname} />
+        )}
         <NavLink href="/dashboard/settings" label="Settings" icon={Settings} pathname={pathname} />
         <button
           onClick={signOut}
