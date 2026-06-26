@@ -53,7 +53,8 @@ export default function AdminClient({ users: initialUsers }: Props) {
       if (res.ok) {
         setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, plan: newPlan } : u));
       } else {
-        alert("Failed to update plan. Please try again.");
+        const errorData = await res.json().catch(() => ({}));
+        alert(`Failed to update plan: ${errorData.error || res.status}`);
       }
     } catch {
       alert("Something went wrong. Please try again.");
