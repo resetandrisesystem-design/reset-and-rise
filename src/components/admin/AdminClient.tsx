@@ -20,7 +20,7 @@ interface Props {
 const PLAN_META = {
   core:    { label: "Core",    icon: Layers,    color: "text-navy-400",  bg: "bg-ivory-100" },
   premium: { label: "Premium", icon: Sparkles,  color: "text-gold-500",  bg: "bg-gold-50"   },
-  vip:     { label: "VIP",     icon: Crown,     color: "text-navy-500",  bg: "bg-navy-500"  },
+  vip:     { label: "VIP",     icon: Crown,     color: "text-white",     bg: "bg-navy-500"  },
 } as const;
 
 export default function AdminClient({ users: initialUsers }: Props) {
