@@ -14,6 +14,7 @@ interface UserRow {
 
 interface Props {
   users: UserRow[];
+  callerEmail: string;
 }
 
 const PLAN_META = {
@@ -22,7 +23,7 @@ const PLAN_META = {
   vip:     { label: "VIP",     icon: Crown,     color: "text-navy-500",  bg: "bg-navy-500"  },
 } as const;
 
-export default function AdminClient({ users: initialUsers }: Props) {
+export default function AdminClient({ users: initialUsers, callerEmail }: Props) {
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export default function AdminClient({ users: initialUsers }: Props) {
       const res = await fetch("/api/admin/update-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: userId, newPlan }),
+        body: JSON.stringify({ targetUserId: userId, newPlan, callerEmail }),
       });
       if (res.ok) {
         setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, plan: newPlan } : u));

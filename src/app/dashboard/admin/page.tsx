@@ -8,6 +8,7 @@ import { ShieldOff } from "lucide-react";
 export default function AdminPage() {
   const [status, setStatus] = useState<"loading" | "allowed" | "denied">("loading");
   const [users, setUsers] = useState<any[]>([]);
+  const [callerEmail, setCallerEmail] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
@@ -16,6 +17,8 @@ export default function AdminPage() {
         setStatus("denied");
         return;
       }
+
+      setCallerEmail(session.user.email);
 
       // Fetch all profiles (RLS allows users to see only their own row normally,
       // but admins fetch via this client-readable view since profiles has a
@@ -51,5 +54,5 @@ export default function AdminPage() {
     );
   }
 
-  return <AdminClient users={users} />;
+  return <AdminClient users={users} callerEmail={callerEmail} />;
 }
