@@ -3,31 +3,32 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdminEmail } from "@/lib/admin-emails";
 
 export async function POST(request: NextRequest) {
-  const { targetUserId, newPlan, callerEmail } = await request.json();
+  const admin = createAdminClient();
 
-  // Verify the caller is an admin using the email they pass from the client
-  // Then verify it's real by looking up that email in auth.users via admin client
-  if (!callerEmail || !isAdminEmail(callerEmail)) {
+  // Authenticate the caller by verifying their access token (JWT).
+  // The token is validated by Supabase — unlike an email string, a client
+  // cannot forge it, so this can't be bypassed by knowing an admin's email.
+  const authHeader = request.headers.get("authorization") ?? "";
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!token) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+  }
+
+  const {
+    data: { user },
+    error: authError,
+  } = await admin.auth.getUser(token);
+
+  if (authError || !user?.email || !isAdminEmail(user.email)) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
+
+  const { targetUserId, newPlan } = await request.json();
 
   if (!targetUserId || !["core", "premium", "vip"].includes(newPlan)) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const admin = createAdminClient();
-
-  // Double-verify: confirm this email actually exists as a real user
-  const { data: users } = await admin.auth.admin.listUsers();
-  const callerExists = users?.users?.some(
-    (u) => u.email?.toLowerCase() === callerEmail.toLowerCase()
-  );
-
-  if (!callerExists) {
-    return NextResponse.json({ error: "Not authorized" }, { status: 403 });
-  }
-
-  // Perform the update
   const { error } = await admin
     .from("profiles")
     .update({ plan: newPlan })

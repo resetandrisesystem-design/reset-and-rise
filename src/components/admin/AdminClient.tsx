@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Search, Shield, Crown, Sparkles, Layers } from "lucide-react";
 import { format } from "date-fns";
+import { createClient } from "@/lib/supabase/client";
 
 interface UserRow {
   id: string;
@@ -14,7 +15,6 @@ interface UserRow {
 
 interface Props {
   users: UserRow[];
-  callerEmail: string;
 }
 
 const PLAN_META = {
@@ -23,7 +23,7 @@ const PLAN_META = {
   vip:     { label: "VIP",     icon: Crown,     color: "text-navy-500",  bg: "bg-navy-500"  },
 } as const;
 
-export default function AdminClient({ users: initialUsers, callerEmail }: Props) {
+export default function AdminClient({ users: initialUsers }: Props) {
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -46,10 +46,18 @@ export default function AdminClient({ users: initialUsers, callerEmail }: Props)
   async function updatePlan(userId: string, newPlan: "core" | "premium" | "vip") {
     setUpdatingId(userId);
     try {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       const res = await fetch("/api/admin/update-plan", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: userId, newPlan, callerEmail }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token ?? ""}`,
+        },
+        body: JSON.stringify({ targetUserId: userId, newPlan }),
       });
       if (res.ok) {
         setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, plan: newPlan } : u));
