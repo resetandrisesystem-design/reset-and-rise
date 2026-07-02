@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { CalendarDays, Brain, Wallet, UtensilsCrossed, BookHeart, ArrowRight } from "lucide-react";
+import ShareBar from "@/components/share/ShareBar";
 
 const AFFIRMATIONS = [
   "You are not behind. You are brewing.",
@@ -82,6 +83,8 @@ export default function DashboardPage() {
           </Link>
         ))}
       </div>
+
+      <ShareBar />
     </div>
   );
 }

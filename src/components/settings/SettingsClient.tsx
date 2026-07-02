@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User, Lock, Trash2, CheckCircle2, AlertCircle, Bell, Camera, X } from "lucide-react";
+import ShareBar from "@/components/share/ShareBar";
 
 const AVATAR_CATEGORIES = {
   faces: {
@@ -478,6 +479,9 @@ export default function SettingsClient({
           ))}
         </div>
       </div>
+
+      {/* ── Share ── */}
+      <ShareBar compact />
 
       {/* ── Danger Zone ── */}
       <div className="card border-red-100">
