@@ -22,21 +22,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!session) { window.location.href = "/auth/login"; return; }
 
       const { data: prof } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .maybeSingle();
+        .from("profiles").select("*").eq("id", session.user.id).maybeSingle();
 
       setUser(session.user);
       setProfile(prof);
 
-      // Show welcome animation only once per session
       const key = `welcome_shown_${session.user.id}`;
       if (!sessionStorage.getItem(key)) {
         setShowWelcome(true);
         sessionStorage.setItem(key, "1");
       }
-
       setLoading(false);
     });
   }, []);
@@ -56,7 +51,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-dvh bg-ivory-100">
-      {/* Welcome animation — shows once per session */}
       {showWelcome && (
         <WelcomeAnimation
           name={name}
@@ -67,8 +61,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <Sidebar user={user} profile={profile} />
 
-      <main className="flex-1 ml-64 p-8 max-w-4xl">
-        {/* Back button */}
+      {/* 
+        Desktop: ml-64 to clear the fixed sidebar
+        Mobile: pt-14 to clear the fixed top bar, no left margin
+      */}
+      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 px-4 lg:px-8 py-4 lg:py-8 max-w-4xl w-full">
         {!isOverview && (
           <button
             onClick={() => router.push("/dashboard")}
