@@ -12,7 +12,7 @@ import {
   BookHeart, LayoutDashboard, LogOut,
   CalendarRange, CalendarCheck, Settings, Calendar, Home,
   Heart, Target, Activity, CalendarClock, Wind, Lock,
-  Shield, Menu, X, Baby
+  Shield, Menu, X, Baby, Sparkles
 } from "lucide-react";
 import clsx from "clsx";
 import { useState } from "react";
@@ -41,6 +41,7 @@ const VIP_NAV = [
   { href: "/dashboard/vip-weekly",  label: "Weekly Tracker",   icon: CalendarRange },
   { href: "/dashboard/vip-monthly", label: "Monthly Progress", icon: CalendarClock },
   { href: "/dashboard/vip-reset",   label: "Weekly Reset",     icon: Wind          },
+  { href: "/dashboard/faith",       label: "Faith & Renewal",  icon: Sparkles      },
 ];
 
 function NavLink({ href, label, icon: Icon, pathname, exact = false, locked = false, onClick }: {
