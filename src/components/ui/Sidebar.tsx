@@ -12,7 +12,7 @@ import {
   BookHeart, LayoutDashboard, LogOut,
   CalendarRange, CalendarCheck, Settings, Calendar, Home,
   Heart, Target, Activity, CalendarClock, Wind, Lock,
-  Shield, Menu, X
+  Shield, Menu, X, Baby
 } from "lucide-react";
 import clsx from "clsx";
 import { useState } from "react";
@@ -27,6 +27,7 @@ const NAV = [
   { href: "/dashboard/finance",  label: "Money Reset",     icon: Wallet          },
   { href: "/dashboard/meals",    label: "Meal Planner",    icon: UtensilsCrossed },
   { href: "/dashboard/journal",  label: "AI Journal",      icon: BookHeart       },
+  { href: "/dashboard/parenting", label: "Parenting Lane", icon: Baby           },
 ];
 
 const PREMIUM_NAV = [
