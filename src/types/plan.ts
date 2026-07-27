@@ -13,9 +13,9 @@ export const PLAN_LABEL: Record<Plan, string> = {
 };
 
 export const PLAN_PRICE: Record<Plan, string> = {
-  core: "$26.99",
-  premium: "£57",
-  vip: "$99+",
+  core: "£9.99",
+  premium: "£19.99",
+  vip: "£34.99",
 };
 
 /** Returns true if a user on `userPlan` can access a page that requires `requiredPlan`. */
