@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Target, Image as ImageIcon, Trophy, Plus, X } from "lucide-react";
+import RefreshableQuote from "@/components/ui/RefreshableQuote";
+import { GOALS_QUOTES } from "@/lib/quotes";
 import { format } from "date-fns";
 
 interface GoalsEntry {
@@ -108,6 +110,8 @@ export default function GoalsClient({ userId, quarter, initialEntry }: Props) {
           {saved ? "✓ Saved" : saving ? "Saving…" : "Auto-save on"}
         </span>
       </div>
+
+      <RefreshableQuote quotes={GOALS_QUOTES} variant="light" />
 
       {/* Vision Board */}
       <div className="card mb-5">

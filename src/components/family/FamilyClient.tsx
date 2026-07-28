@@ -2,7 +2,9 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Heart, Users } from "lucide-react";
+import { Users } from "lucide-react";
+import RefreshableQuote from "@/components/ui/RefreshableQuote";
+import { FAMILY_QUOTES } from "@/lib/quotes";
 import { format } from "date-fns";
 
 interface FamilyEntry {
@@ -72,12 +74,7 @@ export default function FamilyClient({ userId, today, initialEntry, history }: P
       </div>
 
       {/* Affirmation */}
-      <div className="flex gap-3 bg-white border-l-4 border-l-gold-400 rounded-r-2xl px-5 py-4 mb-6 shadow-sm">
-        <Heart size={18} className="text-gold-400 flex-shrink-0" />
-        <p className="font-serif text-navy-500 italic text-base leading-relaxed">
-          &ldquo;The people who matter most need your presence, not your perfection.&rdquo;
-        </p>
-      </div>
+      <RefreshableQuote quotes={FAMILY_QUOTES} variant="light" />
 
       {/* Connection Focus */}
       <div className="card mb-5">

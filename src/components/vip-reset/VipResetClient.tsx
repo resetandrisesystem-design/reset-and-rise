@@ -2,7 +2,9 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Wind, Feather, ArrowRight } from "lucide-react";
+import { Feather, ArrowRight } from "lucide-react";
+import RefreshableQuote from "@/components/ui/RefreshableQuote";
+import { VIP_RESET_QUOTES } from "@/lib/quotes";
 import { format } from "date-fns";
 
 interface VipResetEntry {
@@ -66,12 +68,7 @@ export default function VipResetClient({ userId, today, initialEntry }: Props) {
       </div>
 
       {/* Calming intro */}
-      <div className="ai-card mb-6 text-center">
-        <Wind size={24} className="text-gold-400 mx-auto mb-3" />
-        <p className="font-serif text-ivory-100 italic text-lg leading-relaxed">
-          &ldquo;Breathe. You don&apos;t have to fix everything right now. Just this.&rdquo;
-        </p>
-      </div>
+      <RefreshableQuote quotes={VIP_RESET_QUOTES} variant="dark" />
 
       {/* What feels heavy */}
       <div className="card mb-5">

@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Battery, BatteryLow, BatteryMedium, BatteryFull, Droplet, Footprints, Moon } from "lucide-react";
+import RefreshableQuote from "@/components/ui/RefreshableQuote";
+import { VIP_DAILY_QUOTES } from "@/lib/quotes";
 import { format } from "date-fns";
 
 const MOOD_OPTIONS = [
@@ -139,6 +141,8 @@ export default function VipDailyClient({ userId, today, initialEntry }: Props) {
           {saved ? "✓ Saved" : saving ? "Saving…" : "Auto-save on"}
         </span>
       </div>
+
+      <RefreshableQuote quotes={VIP_DAILY_QUOTES} variant="light" />
 
       {/* Today's Focus */}
       <div className="card card-gold mb-5">

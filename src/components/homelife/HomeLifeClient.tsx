@@ -2,7 +2,9 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Home, Sparkles } from "lucide-react";
+import { Home } from "lucide-react";
+import RefreshableQuote from "@/components/ui/RefreshableQuote";
+import { HOME_LIFE_QUOTES } from "@/lib/quotes";
 
 const TIDY_CHECKLIST = [
   "Quick clean",
@@ -107,12 +109,7 @@ export default function HomeLifeClient({ userId, weekStart, initialEntry }: Prop
       </div>
 
       {/* Affirmation */}
-      <div className="flex gap-3 bg-white border-l-4 border-l-gold-400 rounded-r-2xl px-5 py-4 mb-6 shadow-sm">
-        <Sparkles size={18} className="text-gold-400 flex-shrink-0" />
-        <p className="font-serif text-navy-500 italic text-base leading-relaxed">
-          &ldquo;Your home, your mind, your work — everything can be reset gently. You are allowed to slow down.&rdquo;
-        </p>
-      </div>
+      <RefreshableQuote quotes={HOME_LIFE_QUOTES} variant="light" />
 
       {/* Declutter Focus */}
       <div className="card mb-5">
