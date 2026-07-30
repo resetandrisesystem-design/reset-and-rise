@@ -58,26 +58,20 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       userId = existingUser.id;
     } else {
-      const { data: newUser, error: createError } =
-        await supabase.auth.admin.createUser({
-          email: customerEmail,
-          email_confirm: true,
-        });
+      // inviteUserByEmail creates the account AND sends the sign-in email
+      // (generateLink only builds a link without delivering it).
+      const { data: invited, error: inviteError } =
+        await supabase.auth.admin.inviteUserByEmail(customerEmail);
 
-      if (createError || !newUser?.user) {
-        console.error("Paddle webhook: failed to create user", createError);
+      if (inviteError || !invited?.user) {
+        console.error("Paddle webhook: failed to create user", inviteError);
         return NextResponse.json(
           { error: "Failed to create account" },
           { status: 500 }
         );
       }
 
-      userId = newUser.user.id;
-
-      await supabase.auth.admin.generateLink({
-        type: "magiclink",
-        email: customerEmail,
-      });
+      userId = invited.user.id;
     }
 
     await supabase

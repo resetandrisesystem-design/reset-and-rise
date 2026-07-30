@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import CheckoutButton from "@/components/pricing/CheckoutButton";
 import type { Plan } from "@/types/plan";
 
 export const metadata = {
@@ -148,18 +149,11 @@ export default async function PricingPage() {
                 ))}
               </ul>
 
-              <Link
-                href={`/auth/signup?plan=${tier.plan}`}
-                className={
-                  "mt-auto inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-colors " +
-                  (tier.featured
-                    ? "bg-gold-400 text-navy-600 hover:bg-gold-300"
-                    : "bg-navy-500 text-gold-400 hover:bg-navy-600")
-                }
-              >
-                <Sparkles size={14} />
-                Get {tier.name} Access
-              </Link>
+              <CheckoutButton
+                plan={tier.plan}
+                name={tier.name}
+                featured={tier.featured}
+              />
             </div>
           ))}
         </div>
