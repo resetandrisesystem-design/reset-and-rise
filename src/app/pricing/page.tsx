@@ -8,7 +8,7 @@ import type { Plan } from "@/types/plan";
 export const metadata = {
   title: "Pricing — Reset & Rise™",
   description:
-    "One system for your day, your money, your meals, your mind. Choose your plan — lifetime access, one payment.",
+    "One system for your day, your money, your meals, your mind. Choose your plan now.",
 };
 
 interface Tier {
@@ -24,7 +24,7 @@ const TIERS: Tier[] = [
   {
     plan: "core",
     name: "Core",
-    price: "£9.99",
+    price: "£4.99",
     tagline: "Everything you need to reset your day.",
     features: [
       "Daily, Weekly & Monthly Planner",
@@ -36,7 +36,7 @@ const TIERS: Tier[] = [
   {
     plan: "premium",
     name: "Premium",
-    price: "£19.99",
+    price: "£9.99",
     tagline: "Go deeper across your whole life.",
     featured: true,
     features: [
@@ -49,7 +49,7 @@ const TIERS: Tier[] = [
   {
     plan: "vip",
     name: "VIP",
-    price: "£34.99",
+    price: "£14.99",
     tagline: "The complete system, nothing held back.",
     features: [
       "Everything in Premium",
@@ -81,7 +81,7 @@ export default async function PricingPage() {
             Choose your plan
           </h1>
           <p className="text-navy-400 max-w-xl mx-auto leading-relaxed">
-            One system for your day, your money, your meals and your mind. Pay once,
+            One system for your day, your money, your meals and your mind. 
             keep it for life &mdash; including every future update.
           </p>
         </div>
