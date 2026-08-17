@@ -129,7 +129,7 @@ export default async function PricingPage() {
                   (tier.featured ? "text-gold-300" : "text-gold-500")
                 }
               >
-                Lifetime access
+                Monthly Subscription
               </p>
 
               <ul className="space-y-3 mb-8">
