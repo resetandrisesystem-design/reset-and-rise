@@ -19,7 +19,7 @@ export default function CheckoutButton({
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/create-paddle-checkout", {
+      const res = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
