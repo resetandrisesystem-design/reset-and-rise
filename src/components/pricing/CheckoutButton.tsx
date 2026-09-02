@@ -30,6 +30,8 @@ export default function CheckoutButton({
       }
       window.location.href = data.url;
     } catch (err: any) {
+      // Keep the detail in the console for debugging, show the friendly line to users.
+      console.error("Checkout failed:", err);
       setError("Something went wrong starting checkout. Please try again.");
       setLoading(false);
     }

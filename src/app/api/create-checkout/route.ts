@@ -10,11 +10,17 @@ const PRICE_MAP: Record<string, string | undefined> = {
 };
 
 export async function POST(request: NextRequest) {
-  const { plan } = await request.json();
+  const { plan, email } = await request.json();
   const priceId = PRICE_MAP[plan];
 
   if (!plan || !priceId) {
-    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
+    // Surfacing which plan failed makes a misconfigured price ID obvious in the
+    // Vercel logs instead of showing up as a generic "checkout broken".
+    console.error(`Checkout: no price configured for plan "${plan}"`);
+    return NextResponse.json(
+      { error: `No price configured for plan "${plan}"` },
+      { status: 400 }
+    );
   }
 
   const appUrl =
@@ -22,19 +28,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
+      mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
+      customer_email: email || undefined,
       success_url: `${appUrl}/checkout-success`,
       cancel_url: `${appUrl}/pricing`,
       metadata: { plan },
+      // Renewal and cancellation events carry the subscription, not the original
+      // session, so the plan has to be stamped on the subscription itself.
+      subscription_data: { metadata: { plan } },
     });
 
     return NextResponse.json({ url: session.url });
   } catch (err: any) {
     console.error("Stripe checkout error:", err);
     return NextResponse.json(
-      { error: "Failed to create checkout" },
+      { error: err.message || "Failed to create checkout" },
       { status: 500 }
     );
   }
