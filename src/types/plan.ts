@@ -12,10 +12,12 @@ export const PLAN_LABEL: Record<Plan, string> = {
   vip: "VIP",
 };
 
+/** Must match the Stripe Prices and the pricing page. Verified against live
+ *  Stripe on 2 Sept 2026: all three are recurring monthly GBP. */
 export const PLAN_PRICE: Record<Plan, string> = {
-  core: "£9.99",
-  premium: "£19.99",
-  vip: "£34.99",
+  core: "£4.99",
+  premium: "£9.99",
+  vip: "£14.99",
 };
 
 /** Returns true if a user on `userPlan` can access a page that requires `requiredPlan`. */

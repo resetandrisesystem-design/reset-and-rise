@@ -63,14 +63,12 @@ function UpgradePrompt({ requiredPlan }: { requiredPlan: Plan }) {
       </h2>
 
       <p className="text-navy-400 text-sm max-w-md leading-relaxed mb-6">
-        Upgrade to {label} to unlock this and other tools designed to help you go deeper —
-        for {price}, with lifetime access and all future updates included.
+        Upgrade to {label} to unlock this and other tools designed to help you go deeper,
+        for {price} a month, with all future updates included.
       </p>
 
       <a
-        href="https://www.resetandrisesystem.com"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="/pricing"
         className="btn-primary flex items-center gap-2"
       >
         <Sparkles size={14} />
