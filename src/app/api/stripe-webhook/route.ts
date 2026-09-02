@@ -3,7 +3,14 @@ import Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Plan } from "@/types/plan";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+/** Built per request, not at module load. `next build` collects page data for
+ *  route handlers, which runs module-level code, so constructing Stripe here
+ *  would make the build fail in any environment without the secret. */
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
+  return new Stripe(key);
+}
 
 /** profiles.plan has a CHECK constraint, so only these three values may ever be written. */
 const VALID_PLANS: Plan[] = ["core", "premium", "vip"];
@@ -59,7 +66,7 @@ async function setPlan(
 /** Subscription events carry a customer id but no email, so resolve it via Stripe. */
 async function emailForCustomer(customer: string | Stripe.Customer | Stripe.DeletedCustomer) {
   const id = typeof customer === "string" ? customer : customer.id;
-  const record = await stripe.customers.retrieve(id);
+  const record = await getStripe().customers.retrieve(id);
   if (record.deleted) return null;
   return record.email ?? null;
 }
@@ -76,7 +83,7 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = await stripe.webhooks.constructEventAsync(
+    event = await getStripe().webhooks.constructEventAsync(
       rawBody,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
