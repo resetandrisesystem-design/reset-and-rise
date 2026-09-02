@@ -81,8 +81,8 @@ export default async function PricingPage() {
             Choose your plan
           </h1>
           <p className="text-navy-400 max-w-xl mx-auto leading-relaxed">
-            One system for your day, your money, your meals and your mind. 
-            keep it for life &mdash; including every future update.
+            One system for your day, your money, your meals and your mind,
+            including every future update.
           </p>
         </div>
 
@@ -160,7 +160,7 @@ export default async function PricingPage() {
 
         {/* Reassurance */}
         <p className="text-center text-xs text-navy-400 mt-10">
-          30-day money-back guarantee &middot; One-time payment &middot; Works on any device
+          30-day money-back guarantee &middot; Cancel anytime &middot; Works on any device
         </p>
         <p className="text-center text-sm text-navy-500 mt-6">
           Already have an account?{" "}
