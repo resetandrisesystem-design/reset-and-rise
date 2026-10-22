@@ -46,6 +46,11 @@ export async function POST(request: NextRequest) {
       // Renewal and cancellation events carry the subscription, not the original
       // session, so the plan has to be stamped on the subscription itself.
       subscription_data: { metadata: { plan } },
+      // Stripe shows the price in the buyer's local currency where it supports
+      // that market (see src/lib/adaptivePricing.ts for the list; Nigeria and
+      // Ghana are not on it). This overrides the dashboard setting. The account
+      // is still paid in GBP, and the webhook keeps seeing GBP amounts.
+      adaptive_pricing: { enabled: true },
     });
 
     return NextResponse.json({ url: session.url });
