@@ -32,6 +32,7 @@ export default function FinancePage() {
       setData({
         userId:      session.user.id,
         thisMonth,
+        initialCurrency: session.user.user_metadata?.currency ?? null,
         initialEntry: entry,
         history:     history ?? [],
         savedCats,

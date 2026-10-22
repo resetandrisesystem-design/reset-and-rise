@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase/client";
 import type { FinanceEntry } from "@/types";
 import { Pencil, Plus, Trash2, Check, X, Calendar, Bell } from "lucide-react";
 import { format, addWeeks, addMonths } from "date-fns";
+import { useCurrency } from "@/lib/useCurrency";
+import { convertAmount, currencySymbol, fetchRate, formatMoney } from "@/lib/currency";
+import CurrencyPicker from "@/components/finance/CurrencyPicker";
 
 // Default categories — used if no custom ones saved yet
 const DEFAULT_CATS = [
@@ -42,10 +45,12 @@ interface Props {
   history:      Partial<FinanceEntry>[];
   savedCats:    Category[] | null;
   checkinData:  { last_checkin: string | null; next_checkin: string | null; frequency: string | null } | null;
+  /** Currency saved on the account, if the user has chosen one before. */
+  initialCurrency?: string | null;
 }
 
 export default function FinanceClient({
-  userId, thisMonth, initialEntry, history, savedCats, checkinData
+  userId, thisMonth, initialEntry, history, savedCats, checkinData, initialCurrency
 }: Props) {
   const supabase = createClient();
   const [saving, setSaving] = useState(false);
@@ -85,6 +90,61 @@ export default function FinanceClient({
   const totalSpent = Object.values(expenses).reduce((a, b) => a + b, 0);
   const remaining  = income - totalSpent;
   const savingsPct = savingsGoal > 0 ? Math.min(100, Math.round((savingsSaved / savingsGoal) * 100)) : 0;
+
+  // Past months, kept in state so a conversion can update them on screen
+  const [hist, setHist] = useState(history);
+
+  // Currency: the user's choice, or detected from their location on first visit.
+  // Once figures exist the currency is never switched automatically.
+  const hasAmounts = income > 0 || totalSpent > 0 || savingsSaved > 0 || hist.some((h) => (h.income ?? 0) > 0);
+  const currency = useCurrency({ userId, initialCurrency, hasExistingData: hasAmounts });
+  const sym = currencySymbol(currency.code);
+  const fmt = (n: number) => formatMoney(n, currency.code);
+  const padClass = sym.length <= 1 ? "pl-7" : sym.length === 2 ? "pl-9" : "pl-12";
+  const padSmall = sym.length <= 1 ? "pl-6" : sym.length === 2 ? "pl-8" : "pl-11";
+
+  // Switching currency when figures exist offers a one-time conversion at today's rate
+  const [pending, setPending] = useState<{ from: string; to: string; rate: number | null; loading: boolean } | null>(null);
+
+  function requestCurrency(to: string) {
+    if (to === currency.code) { setPending(null); return; }
+    if (!hasAmounts) { currency.setCurrency(to); return; }
+    setPending({ from: currency.code, to, rate: null, loading: true });
+    fetchRate(currency.code, to).then((rate) =>
+      setPending((p) => (p && p.to === to ? { ...p, rate, loading: false } : p))
+    );
+  }
+
+  function finishSwitch(convert: boolean) {
+    if (!pending) return;
+    const { to, rate } = pending;
+    if (convert && rate) {
+      const cv = (n: number | null | undefined) => convertAmount(n ?? 0, rate, to);
+      setIncome(cv(income));
+      setSavingsGoal(cv(savingsGoal));
+      setSavingsSaved(cv(savingsSaved));
+      setExpenses((prev) => Object.fromEntries(Object.entries(prev).map(([k, v]) => [k, cv(v)])));
+      const converted = hist.map((h) => ({
+        ...h,
+        income:        cv(h.income),
+        exp_rent:      cv(h.exp_rent),
+        exp_groceries: cv(h.exp_groceries),
+        exp_children:  cv(h.exp_children),
+        exp_selfcare:  cv(h.exp_selfcare),
+        exp_savings:   cv(h.exp_savings),
+        exp_other:     cv(h.exp_other),
+      }));
+      setHist(converted);
+      // Past months are written directly; this month is written by auto-save.
+      converted
+        .filter((h) => h.month && h.month !== thisMonth)
+        .forEach(({ month, ...cols }) => {
+          supabase.from("finance_entries").update(cols).eq("user_id", userId).eq("month", month!).then(() => {}, () => {});
+        });
+    }
+    currency.setCurrency(to);
+    setPending(null);
+  }
 
   // Save finance entry
   const save = useCallback(async () => {
@@ -192,20 +252,61 @@ export default function FinanceClient({
         </span>
       </div>
 
+      {/* Currency */}
+      <div className="mb-5">
+        <CurrencyPicker
+          value={pending?.to ?? currency.code}
+          source={currency.source}
+          country={currency.country}
+          suggestion={currency.suggestion}
+          onChange={requestCurrency}
+        />
+        {pending && (
+          <div className="mt-3 bg-white rounded-xl border border-gold-200 p-4">
+            <p className="text-sm text-navy-500 font-medium mb-1">Switching from {pending.from} to {pending.to}</p>
+            {pending.loading ? (
+              <p className="text-xs text-navy-400 italic mb-3">Fetching today&apos;s exchange rate…</p>
+            ) : pending.rate ? (
+              <p className="text-xs text-navy-400 mb-3">
+                Convert the figures on this page at today&apos;s rate? 1 {pending.from} = {pending.rate.toLocaleString(undefined, { maximumSignificantDigits: 5 })} {pending.to}.
+                Past months in your history are converted too.
+              </p>
+            ) : (
+              <p className="text-xs text-navy-400 mb-3">
+                Today&apos;s rate is not available right now. You can still switch and keep the numbers as they are.
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {!pending.loading && pending.rate && (
+                <button onClick={() => finishSwitch(true)} className="btn-primary text-sm py-1.5">
+                  Convert my figures
+                </button>
+              )}
+              <button onClick={() => finishSwitch(false)} disabled={pending.loading} className="btn-outline text-sm py-1.5 disabled:opacity-50">
+                Keep the numbers, just change the currency
+              </button>
+              <button onClick={() => setPending(null)} className="btn-ghost text-sm py-1.5">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="stat-card">
           <p className="label">Income</p>
-          <p className="font-serif text-3xl font-medium text-navy-500">£{income.toLocaleString()}</p>
+          <p className="font-serif text-3xl font-medium text-navy-500">{fmt(income)}</p>
         </div>
         <div className="stat-card">
           <p className="label">Spent</p>
-          <p className="font-serif text-3xl font-medium text-navy-500">£{totalSpent.toLocaleString()}</p>
+          <p className="font-serif text-3xl font-medium text-navy-500">{fmt(totalSpent)}</p>
         </div>
         <div className="stat-card">
           <p className="label">Remaining</p>
           <p className={`font-serif text-3xl font-medium ${remaining >= 0 ? "text-gold-500" : "text-red-500"}`}>
-            {remaining < 0 ? "-" : ""}£{Math.abs(remaining).toLocaleString()}
+            {remaining < 0 ? "-" : ""}{fmt(Math.abs(remaining))}
           </p>
         </div>
       </div>
@@ -214,10 +315,10 @@ export default function FinanceClient({
       <div className="card card-gold mb-5">
         <p className="label">Monthly income</p>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400 font-medium">£</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400 font-medium">{sym}</span>
           <input
             type="number"
-            className="input pl-7"
+            className={`input ${padClass}`}
             placeholder="0"
             value={income || ""}
             onChange={(e) => setIncome(Number(e.target.value))}
@@ -287,10 +388,10 @@ export default function FinanceClient({
 
                   {/* Amount input */}
                   <div className="relative w-28 flex-shrink-0">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400 text-xs">£</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400 text-xs">{sym}</span>
                     <input
                       type="number"
-                      className="input pl-6 py-1.5 text-sm h-8"
+                      className={`input ${padSmall} py-1.5 text-sm h-8`}
                       placeholder="0"
                       value={val || ""}
                       onChange={(e) => setExpenses((prev) => ({ ...prev, [key]: Number(e.target.value) }))}
@@ -351,11 +452,11 @@ export default function FinanceClient({
         <p className="label">Savings goal tracker</p>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <label className="label text-xs">Goal (£)</label>
+            <label className="label text-xs">Goal ({sym})</label>
             <input type="number" className="input" value={savingsGoal || ""} onChange={(e) => setSavingsGoal(Number(e.target.value))} />
           </div>
           <div>
-            <label className="label text-xs">Saved so far (£)</label>
+            <label className="label text-xs">Saved so far ({sym})</label>
             <input type="number" className="input" value={savingsSaved || ""} onChange={(e) => setSavingsSaved(Number(e.target.value))} />
           </div>
         </div>
@@ -363,9 +464,9 @@ export default function FinanceClient({
           <div className="progress-fill" style={{ width: `${savingsPct}%` }} />
         </div>
         <div className="flex justify-between text-xs text-navy-400">
-          <span>£{savingsSaved.toLocaleString()} saved</span>
+          <span>{fmt(savingsSaved)} saved</span>
           <span className="font-medium text-navy-500">{savingsPct}%</span>
-          <span>Goal: £{savingsGoal.toLocaleString()}</span>
+          <span>Goal: {fmt(savingsGoal)}</span>
         </div>
       </div>
 
@@ -434,19 +535,19 @@ export default function FinanceClient({
       </div>
 
       {/* History */}
-      {history.length > 1 && (
+      {hist.length > 1 && (
         <div className="card">
           <p className="label">Recent months</p>
           <div className="space-y-2">
-            {history.map((h) => {
+            {hist.map((h) => {
               const sp  = (h.exp_rent ?? 0) + (h.exp_groceries ?? 0) + (h.exp_children ?? 0) + (h.exp_selfcare ?? 0) + (h.exp_savings ?? 0) + (h.exp_other ?? 0);
               const rem = (h.income ?? 0) - sp;
               return (
                 <div key={h.month} className="flex items-center justify-between text-sm py-2 border-b border-ivory-200 last:border-0">
                   <span className="text-navy-400">{h.month}</span>
-                  <span className="text-navy-500">Income £{(h.income ?? 0).toLocaleString()}</span>
+                  <span className="text-navy-500">Income {fmt(h.income ?? 0)}</span>
                   <span className={rem >= 0 ? "text-gold-500 font-medium" : "text-red-500 font-medium"}>
-                    {rem >= 0 ? "+" : "-"}£{Math.abs(rem).toLocaleString()}
+                    {rem >= 0 ? "+" : "-"}{fmt(Math.abs(rem))}
                   </span>
                 </div>
               );

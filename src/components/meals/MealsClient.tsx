@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { MealPlan, MealEntry } from "@/types";
 import { Plus, X, ShoppingCart, Target } from "lucide-react";
+import { useCurrency } from "@/lib/useCurrency";
+import { formatMoney } from "@/lib/currency";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -48,9 +50,11 @@ interface Props {
   initialPlan:   (MealPlan & { meal_entries: MealEntry[] }) | null;
   monthlyBudget: number;
   totalSpent:    number;
+  /** Currency saved on the account, if the user has chosen one before. */
+  initialCurrency?: string | null;
 }
 
-export default function MealsClient({ userId, weekStart, initialPlan, monthlyBudget, totalSpent }: Props) {
+export default function MealsClient({ userId, weekStart, initialPlan, monthlyBudget, totalSpent, initialCurrency }: Props) {
   const supabase = createClient();
   const [saving, setSaving]               = useState(false);
   const [saved,  setSaved]                = useState(false);
@@ -106,6 +110,10 @@ export default function MealsClient({ userId, weekStart, initialPlan, monthlyBud
   // Budget remaining
   const groceryBudget  = monthlyBudget > 0 ? Math.round(monthlyBudget * 0.25) : 0; // rough 25% for groceries
   const budgetDisplay  = monthlyBudget > 0;
+
+  // Same currency as Money Reset, where the income figure comes from
+  const currency = useCurrency({ userId, initialCurrency, hasExistingData: monthlyBudget > 0 });
+  const fmt = (n: number) => formatMoney(n, currency.code);
 
   const save = useCallback(async () => {
     setSaving(true);
@@ -355,7 +363,7 @@ export default function MealsClient({ userId, weekStart, initialPlan, monthlyBud
             <div className="bg-ivory-100 rounded-xl px-3 py-1.5 border border-ivory-200 text-right">
               <p className="text-xs text-navy-400">Est. grocery budget</p>
               <p className="font-serif text-sm font-medium text-navy-500">
-                ~£{groceryBudget.toLocaleString()}
+                ~{fmt(groceryBudget)}
                 <span className="text-xs text-navy-300 font-normal ml-1">/ month</span>
               </p>
             </div>
@@ -363,7 +371,7 @@ export default function MealsClient({ userId, weekStart, initialPlan, monthlyBud
         </div>
         {budgetDisplay && (
           <p className="text-xs text-navy-400 italic mb-3">
-            Based on your £{monthlyBudget.toLocaleString()} monthly income from Money Reset (est. 25% for groceries)
+            Based on your {fmt(monthlyBudget)} monthly income from Money Reset (est. 25% for groceries)
           </p>
         )}
         <textarea

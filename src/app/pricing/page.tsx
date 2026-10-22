@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import CheckoutButton from "@/components/pricing/CheckoutButton";
+import LocalPrice from "@/components/pricing/LocalPrice";
 import type { Plan } from "@/types/plan";
 
 export const metadata = {
@@ -123,6 +124,7 @@ export default async function PricingPage() {
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="font-serif text-4xl font-medium">{tier.price}</span>
               </div>
+              <LocalPrice gbp={Number(tier.price.replace(/[^0-9.]/g, ""))} featured={tier.featured} />
               <p
                 className={
                   "text-xs uppercase tracking-wider mb-6 " +
