@@ -35,6 +35,7 @@ export default function MealsPage() {
         initialPlan:   plan,
         monthlyBudget: finance?.income ?? 0,
         totalSpent,
+        initialCurrency: session.user.user_metadata?.currency ?? null,
       });
     });
   }, []);
